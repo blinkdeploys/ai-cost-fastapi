@@ -1,4 +1,7 @@
 # Compression Techniques
+from typing import Optional, Dict, List
+
+
 
 def remove_extra_whitespace():
     """Remove extra whitespace and normalize spacing"""

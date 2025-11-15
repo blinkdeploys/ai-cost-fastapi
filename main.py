@@ -1,11 +1,11 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 from typing import Dict, List, Optional
 import tiktoken
 import re
 import uvicorn
 from datetime import datetime
+from .models import CompressionResult, CostAnalysis, ComprehensiveReport
 from .enums import CURRENT_LLM_PRICING
 from .utils import (remove_extra_whitespace,
                     remove_redundant_punctuation,
