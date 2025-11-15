@@ -1,6 +1,8 @@
 # Compression Techniques
 import tiktoken
 from typing import Optional, Dict, List
+from models import CompressionResult, CostAnalysis, ComprehensiveReport
+
 
 # Basic stopwords that can often be removed without losing context
 TOKEN_LIMIT = 5000
@@ -141,7 +143,7 @@ def calculate_costs(token_count: int) -> List[CostAnalysis]:
     QUOTA_SIZE = 1_000_000
 
     for provider, models in LLM_PRICING.items():
-        for model_name, pricing in models.items():
+        for llm_name, pricing in models.items():
             input_cost = (token_count / QUOTA_SIZE) * pricing["input"]
             
             # calculate output costs for 1k and 5k tokens
@@ -153,7 +155,7 @@ def calculate_costs(token_count: int) -> List[CostAnalysis]:
             
             fits_in_context = token_count <= pricing["context"]
             
-            cost_analyses.append(CostAnalysis(model_name=model_name,
+            cost_analyses.append(CostAnalysis(llm_name=llm_name,
                                               provider=provider,
                                               input_cost=round(input_cost, 6),
                                               output_cost_1k=round(output_cost_1k, 6),

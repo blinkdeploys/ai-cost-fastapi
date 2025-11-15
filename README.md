@@ -176,7 +176,7 @@ The service returns a comprehensive JSON report:
   },
   "cost_analysis": [
     {
-      "model_name": "GPT-4o",
+      "llm_name": "GPT-4o",
       "provider": "OpenAI",
       "input_cost": 0.01921,
       "output_cost_1k": 0.00002,

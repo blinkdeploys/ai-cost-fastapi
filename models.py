@@ -12,7 +12,7 @@ class CompressionResult(BaseModel):
 
 
 class CostAnalysis(BaseModel):
-    model_name: str
+    llm_name: str
     provider: str
     input_cost: float
     output_cost_1k: float

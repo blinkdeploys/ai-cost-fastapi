@@ -5,9 +5,9 @@ import tiktoken
 import re
 import uvicorn
 from datetime import datetime
-from .models import CompressionResult, CostAnalysis, ComprehensiveReport
-from .enums import CURRENT_LLM_PRICING
-from .utils import (remove_extra_whitespace,
+from models import CompressionResult, CostAnalysis, ComprehensiveReport
+from enums import CURRENT_LLM_PRICING
+from utils import (remove_extra_whitespace,
                     remove_redundant_punctuation,
                     remove_common_stopwords,
                     remove_code_comments,
@@ -16,9 +16,9 @@ from .utils import (remove_extra_whitespace,
                     calculate_costs,
                     )
 
+
+
 app = FastAPI(title="AI Cost Analysis Service", version="1.0.0")
-
-
 
 
 
@@ -70,7 +70,7 @@ async def analyze_costs(file):
         compressed_cost_analysis = calculate_costs(compression_result.compressed_tokens)
         
         # Find cheapest and most expensive models
-        original_costs_1k = [(ca.model_name, ca.provider, ca.total_cost_1k_output) 
+        original_costs_1k = [(ca.llm_name, ca.provider, ca.total_cost_1k_output) 
                              for ca in original_cost_analysis if ca.fits_in_context]
         cheapest = min(original_costs_1k, key=lambda x: x[2])
         most_expensive = max(original_costs_1k, key=lambda x: x[2])
