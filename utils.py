@@ -73,10 +73,26 @@ def remove_code_comments():
     return text
 
 
-
+# NOTE: Exclude for code string processing
+# this method removes duplicated lines
+# may not be ideal for processing code as it will remove needed code
 def deduplicate_repeated_content(text: str) -> str:
     """Remove repeated sentences or paragraphs"""
-    pass
+
+    # break into lines
+    lines = text.split('\n')
+    seen = set()
+    unique_lines = []
+
+    for line in lines:
+        line_stripped = line.strip()
+        if line_stripped and line_stripped not in seen:
+            seen.add(line_stripped)
+            unique_lines.append(line)
+        elif not line_stripped:
+            unique_lines.append(line)
+    
+    return '\n'.join(unique_lines)
 
 
 def compress_text(text: str):
