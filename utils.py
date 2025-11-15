@@ -3,6 +3,7 @@ import tiktoken
 from typing import Optional, Dict, List
 
 # Basic stopwords that can often be removed without losing context
+TOKEN_LIMIT = 5000
 STOPWORDS = {'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
              'very', 'really', 'quite', 'just', 'actually', 'basically'
              }
@@ -97,6 +98,43 @@ def deduplicate_repeated_content(text: str) -> str:
 
 def compress_text(text: str):
     """Compression pipeline: Apply multiple compression techniques to reduce token count"""
+    original_tokens = count_tokens(text)
+    compressed_text = text
+    techniques_applied = []
+    
+    # 1. Remove extra whitespace
+    compressed_text = remove_extra_whitespace(compressed_text)
+    techniques_applied.append("Whitespace normalization")
+    
+    # 2. Remove redundant punctuation
+    compressed_text = remove_redundant_punctuation(compressed_text)
+    techniques_applied.append("Punctuation optimization")
+    
+    # 3. Remove code comments if present
+    if '//' in text or '/*' in text or text.count('#') > 5:
+        compressed_text = remove_code_comments(compressed_text)
+        techniques_applied.append("Code comment removal")
+    
+    # 4. Deduplicate repeated content
+    # TODO: file extension to be used to determine if text is code
+    # compressed_text = deduplicate_repeated_content(compressed_text)
+    # techniques_applied.append("Deduplication")
+    
+    # 5. Remove common stopwords (conservative approach)
+    # Only apply if text is very long to avoid over-compression
+    if original_tokens > TOKEN_LIMIT:
+        compressed_text = remove_common_stopwords(compressed_text)
+        techniques_applied.append("Stopword reduction")
+    
+    compressed_tokens = count_tokens(compressed_text)
+    reduction = ((original_tokens - compressed_tokens) / original_tokens * 100) if original_tokens > 0 else 0
+    
+    return CompressionResult(original_tokens=original_tokens,
+                             compressed_tokens=compressed_tokens,
+                             reduction_percentage=round(reduction, 2),
+                             compression_techniques_applied=techniques_applied,
+                             compressed_text=compressed_text
+                             )
 
 
 def calculate_costs():
