@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  ai-cost-fastapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ai-cost-fastapi
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      # Mount the main.py for hot-reload during development
+      - ./main.py:/app/main.py
+      # Mount a directory for file uploads (optional)
+      - ./uploads:/app/uploads
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT}
+      - LOG_LEVEL=${LOG_LEVEL}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${PORT}/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - ai-cost-network
+
+networks:
+  ai-cost-network:
+    driver: bridge
+
+volumes:
+  uploads:
+    driver: local
