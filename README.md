@@ -110,17 +110,27 @@ The docker-compose setup includes volume mounting for hot-reload:
 
 #### 1. **Analyze Costs** (Main Endpoint)
 ```bash
-POST /analyze-costs/
+POST /analyze/
 ```
 
 Upload a text file to get comprehensive cost analysis.
 
 **Example using cURL:**
+
+In terminal, run:
+
 ```bash
-curl -X POST "http://localhost:8000/analyze-costs/" \
+curl -X POST "http://localhost:8000/analyze/" \
   -H "accept: application/json" \
   -H "Content-Type: multipart/form-data" \
   -F "file=@your_document.txt"
+```
+
+A prompt document has been included for testing purposes:
+
+```bash
+curl -X POST "http://localhost:8000/analyze/" \
+  -F "file=@./PROMPT.md"
 ```
 
 **Example using Python:**
@@ -138,6 +148,48 @@ print(f"Original tokens: {report['original_text_stats']['tokens']}")
 print(f"Compressed tokens: {report['compression_result']['compressed_tokens']}")
 print(f"Reduction: {report['compression_result']['reduction_percentage']}%")
 ```
+
+**Node.js example using axios**
+```js
+import fs from "fs";
+import FormData from "form-data";
+import axios from "axios";
+
+// Path to your file
+const filePath = "./your_document.txt";
+
+// Create form data
+const form = new FormData();
+form.append("file", fs.createReadStream(filePath));
+
+// Send POST request
+try {
+  const response = await axios.post("http://localhost:8000/analyze/", form, {
+    headers: form.getHeaders(),
+  });
+
+  const report = response.data;
+
+  console.log(`Original tokens: ${report.original_text_stats.tokens}`);
+  console.log(`Compressed tokens: ${report.compression_result.compressed_tokens}`);
+  console.log(`Reduction: ${report.compression_result.reduction_percentage}%`);
+} catch (error) {
+  console.error(error.response?.data || error.message);
+}
+```
+
+**✅ Notes:**
+
+* fs.createReadStream(filePath) streams the file to the request.
+* form.getHeaders() automatically sets the correct Content-Type including the multipart boundary.
+
+If you are using CommonJS, replace the imports with:
+```js
+const fs = require("fs");
+const FormData = require("form-data");
+const axios = require("axios");
+```
+
 
 #### 2. **List Models**
 ```bash

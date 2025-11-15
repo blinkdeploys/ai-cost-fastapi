@@ -2,53 +2,27 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from typing import Dict, List, Optional
 import tiktoken
-import re
 import uvicorn
 from datetime import datetime
 from models import CompressionResult, CostAnalysis, ComprehensiveReport
 from enums import CURRENT_LLM_PRICING
-from utils import (remove_extra_whitespace,
-                    remove_redundant_punctuation,
-                    remove_common_stopwords,
-                    remove_code_comments,
-                    deduplicate_repeated_content,
-                    compress_text,
-                    calculate_costs,
-                    )
+from utils import (count_tokens,
+                   remove_extra_whitespace,
+                   remove_redundant_punctuation,
+                   remove_common_stopwords,
+                   remove_code_comments,
+                   deduplicate_repeated_content,
+                   compress_text,
+                   calculate_costs,
+                   )
 
 
 
 app = FastAPI(title="AI Cost Analysis Service", version="1.0.0")
 
 
-
-
-
-
-# Endpoints
-
-
-@app.post("/batch/")
-async def batch_analyze_costs(file):
-    """Run jobs processing all files in a folder"""
-    pass
-
-
-@app.post("/analyze/")
-async def analyze_costs(file):
-    """
-    Upload a text file to analyze AI processing costs
-    
-    Returns comprehensive report including:
-    - Token count breakdown
-    - Cost analysis for all major LLM models
-    - Text compression results
-    - Cost-saving recommendations
-    """
+def run_cost_analysis_pipeline(text):
     try:
-        # read file content
-        content = await file.read()
-        text = content.decode('utf-8')
         
         # raise excep for empty files
         if not text.strip():
@@ -56,20 +30,23 @@ async def analyze_costs(file):
 
         # calculate original text stats
         original_tokens = count_tokens(text)
+        # char count
         char_count = len(text)
+        # word count
         word_count = len(text.split())
+        # line count
         line_count = len(text.split('\n'))
 
         # Perform compression
         compression_result = compress_text(text)
         
-        # Calculate costs for original text
+        # calculate costs for original text
         original_cost_analysis = calculate_costs(original_tokens)
         
-        # Calculate costs for compressed text
+        # calculate costs for compressed text
         compressed_cost_analysis = calculate_costs(compression_result.compressed_tokens)
         
-        # Find cheapest and most expensive models
+        # find cheapest and most expensive models
         original_costs_1k = [(ca.llm_name, ca.provider, ca.total_cost_1k_output) 
                              for ca in original_cost_analysis if ca.fits_in_context]
         cheapest = min(original_costs_1k, key=lambda x: x[2])
@@ -109,11 +86,66 @@ async def analyze_costs(file):
         # deliver
         return report
 
-    except UnicodeDecodeError:
-        raise HTTPException(status_code=400, detail="File must be a valid UTF-8 text file")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+        raise HTTPException(status_code=500,
+                            detail=f"Error processing file contents: {str(e)}")
 
+
+
+
+
+# Endpoints
+
+
+@app.post("/batch/", response_model=ComprehensiveReport)
+async def batch_analyze(file: UploadFile = File(...)):
+    """Run jobs processing all files in a folder"""
+    pass
+
+
+@app.post("/analyze/", response_model=ComprehensiveReport)
+async def analyze(file: UploadFile = File(...)):
+    """
+    Upload a text file to analyze AI processing costs
+    
+    Returns comprehensive report including:
+    - Token count breakdown
+    - Cost analysis for all major LLM models
+    - Text compression results
+    - Cost-saving recommendations
+    """
+    try:
+        # read file content
+        content = await file.read()
+        text = content.decode('utf-8')
+
+        # run pipeline
+        report = run_cost_analysis_pipeline(text)
+        return report
+
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=400, 
+                            detail="File must be a valid UTF-8 text file")
+
+
+@app.get("/test/", response_model=ComprehensiveReport)
+async def test():
+    """test endpoint"""
+    file_path = "./PROMPT.md"
+    text = ""
+
+    try:
+        # open the file and read the text
+        with open(file_path, "r", encoding="utf-8") as f:
+            text = f.read()
+
+        # run pipeline
+        report = run_cost_analysis_pipeline(text)
+        return report
+
+    except UnicodeDecodeError:
+        raise HTTPException(status_code=400, 
+                            detail="File must be a valid UTF-8 text file")
 
 
 

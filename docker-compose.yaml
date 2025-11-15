@@ -8,7 +8,7 @@ services:
       - "${PORT}:${PORT}"
     volumes:
       # Mount the main.py for hot-reload during development
-      - ./main.py:/app/main.py
+      - .:/app/.
       # Mount a directory for file uploads (optional)
       - ./uploads:/app/uploads
     env_file: .env

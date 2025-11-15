@@ -1,7 +1,10 @@
 # Compression Techniques
+import re
 import tiktoken
 from typing import Optional, Dict, List
 from models import CompressionResult, CostAnalysis, ComprehensiveReport
+from enums import CURRENT_LLM_PRICING
+
 
 
 # Basic stopwords that can often be removed without losing context
@@ -142,7 +145,7 @@ def calculate_costs(token_count: int) -> List[CostAnalysis]:
     cost_analyses = []
     QUOTA_SIZE = 1_000_000
 
-    for provider, models in LLM_PRICING.items():
+    for provider, models in CURRENT_LLM_PRICING.items():
         for llm_name, pricing in models.items():
             input_cost = (token_count / QUOTA_SIZE) * pricing["input"]
             
