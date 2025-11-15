@@ -19,9 +19,7 @@ from .utils import (remove_extra_whitespace,
 app = FastAPI(title="AI Cost Analysis Service", version="1.0.0")
 
 
-def count_tokens():
-    """Count tokens using tiktoken library"""
-    pass
+
 
 
 
