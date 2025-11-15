@@ -31,6 +31,13 @@ app = FastAPI(title="AI Cost Analysis Service", version="1.0.0")
 
 # Endpoints
 
+
+@app.post("/batch/")
+async def batch_analyze_costs(file):
+    """Run jobs processing all files in a folder"""
+    pass
+
+
 @app.post("/analyze/")
 async def analyze_costs(file):
     """

@@ -10,7 +10,7 @@ STOPWORDS = {'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being'
     
 
 
-def count_tokens():
+def count_tokens(text: str, model: str = "gpt-4") -> int:
     """Count tokens using tiktoken library"""
     try:
         encoding = tiktoken.encoding_for_model(model)
@@ -21,8 +21,7 @@ def count_tokens():
     return len(tokens)
 
 
-
-def remove_extra_whitespace():
+def remove_extra_whitespace(text: str) -> str:
     """Remove extra whitespace and normalize spacing"""
     # replace multiple spaces with single space
     text = re.sub(r' +', ' ', text)
@@ -33,7 +32,7 @@ def remove_extra_whitespace():
     return '\n'.join(lines)
 
 
-def remove_redundant_punctuation();
+def remove_redundant_punctuation(text: str) -> str:
     """Remove redundant punctuation"""
     # remove multiple consecutive punctuation marks
     text = re.sub(r'([!?.]){2,}', r'\1', text)
@@ -42,7 +41,7 @@ def remove_redundant_punctuation();
     return text
 
 
-def remove_common_stopwords():
+def remove_common_stopwords(text: str) -> str:
     """Remove common English stopwords while preserving meaning"""
     words = text.split()
     # only remove stopwords that don't start sentences
@@ -60,8 +59,7 @@ def remove_common_stopwords():
     return ' '.join(result)
 
 
-
-def remove_code_comments():
+def remove_code_comments(text: str) -> str:
     """Remove programming comments if text contains code"""
 
     # remove single-line comments
@@ -137,9 +135,35 @@ def compress_text(text: str):
                              )
 
 
-def calculate_costs():
+def calculate_costs(token_count: int) -> List[CostAnalysis]:
     """Calculate costs for all LLM models"""
-    pass
+    cost_analyses = []
+    QUOTA_SIZE = 1_000_000
 
+    for provider, models in LLM_PRICING.items():
+        for model_name, pricing in models.items():
+            input_cost = (token_count / QUOTA_SIZE) * pricing["input"]
+            
+            # calculate output costs for 1k and 5k tokens
+            output_cost_1k = (1000 / QUOTA_SIZE) * pricing["output"]
+            output_cost_5k = (5000 / QUOTA_SIZE) * pricing["output"]
+            
+            total_1k = input_cost + output_cost_1k
+            total_5k = input_cost + output_cost_5k
+            
+            fits_in_context = token_count <= pricing["context"]
+            
+            cost_analyses.append(CostAnalysis(model_name=model_name,
+                                              provider=provider,
+                                              input_cost=round(input_cost, 6),
+                                              output_cost_1k=round(output_cost_1k, 6),
+                                              output_cost_5k=round(output_cost_5k, 6),
+                                              total_cost_1k_output=round(total_1k, 6),
+                                              total_cost_5k_output=round(total_5k, 6),
+                                              context_window=pricing["context"],
+                                              fits_in_context=fits_in_context
+                                              ))
+    
+    return cost_analyses
 
 # Compression Techniques
