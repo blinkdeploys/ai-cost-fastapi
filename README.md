@@ -11,13 +11,15 @@ A comprehensive FastAPI service that analyzes AI processing costs for text files
 
 ### 2. **Comprehensive Cost Calculation**
 Includes current pricing (November 2025) for **40+ LLM models** from:
-- **OpenAI**: GPT-5, GPT-4.5, GPT-4o, GPT-4.1, GPT-3.5-Turbo, o3, o4-mini
-- **Anthropic**: Claude Opus 4.1, Sonnet 4.5/4/3.7/3.5, Haiku 4.5/3.5/3
-- **Google**: Gemini 2.5 Pro/Flash, Gemini 1.5 Pro/Flash
-- **xAI**: Grok-3, Grok-4, Grok-Mini
-- **DeepSeek**: V3.2, Chat
-- **Mistral**: Large, Medium
-- **Meta**: Llama 3.1 & 4 (405B, 70B)
+| Providers | LLM Models |
+|-----------|------------|
+| **OpenAI**: | GPT-5, GPT-4.5, GPT-4o, GPT-4.1, GPT-3.5-Turbo, o3, o4-mini |
+| **Anthropic**: | Claude Opus 4.1, Sonnet 4.5/4/3.7/3.5, Haiku 4.5/3.5/3 |
+| **Google**: | Gemini 2.5 Pro/Flash, Gemini 1.5 Pro/Flash |
+| **xAI**: | Grok-3, Grok-4, Grok-Mini |
+| **DeepSeek**: | V3.2, Chat |
+| **Mistral**: | Large, Medium |
+| **Meta**: | Llama 3.1 & 4 (405B, 70B) |
 
 ### 3. **Intelligent Text Compression**
 Applies multiple heuristic (non-AI) compression techniques:
