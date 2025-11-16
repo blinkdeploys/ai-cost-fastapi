@@ -116,18 +116,6 @@ def deduplicate_repeated_content(text: str) -> str:
 
 # Using English syntax rules to reduce prompt text further
 
-# pre-compile the pattrerns
-_COMPILED_FILLER_PATTERNS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
-                             for pattern, replacement in FILLER_REPLACEMENTS.items()
-                             ]
-
-_COMPILED_REDUNDANT_PAIRS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
-                             for pattern, replacement in REDUNDANT_PAIRS.items()
-                             ]
-
-_COMPILED_ABBREVIATIONS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
-                           for pattern, replacement in ABBREVIATIONS.items()
-                           ]
 
 
 def compress_filler_phrases(text: str) -> str:
@@ -186,6 +174,7 @@ def expand_to_contractions(text: str) -> str:
 
 
 # cheaper trick -  converting words to numbers
+# word to number converter v1
 def words_to_number(text: str):
     """
     Convert numbers written in English words into digits and append '(in words)'.
@@ -222,8 +211,38 @@ def words_to_number(text: str):
 
     return f"{total:,} (in words)"
 
+# word to number converter v2
+def convert_number_words_to_int(words: str) -> int:
+    clean = words.lower()
+    clean = re.sub(r"[,/&-]", " ", clean)
+    tokens = clean.split()
 
-# TODO: to detect numbers like in words_to_number() and append approprialtey
+    total = 0
+    current = 0
+
+    for token in tokens:
+        if token in NUM_WORDS:
+            current += NUM_WORDS[token]
+        elif token in MULTIPLIERS:
+            current = max(1, current) * MULTIPLIERS[token]
+            total += current
+            current = 0
+        elif token == "and":
+            continue
+
+    return total + current
+
+
+def convert_all_numbers_in_text(text: str) -> str:
+    def repl(match):
+        original = match.group()
+        number = convert_number_words_to_int(original)
+        return f"{number:,} (in words)"
+
+    return WORD_NUMBER_PATTERN.sub(repl, text)
+
+
+# TODO: to detect numbers like in convert_all_numbers_in_text() and append approprialtey
 def compress_numbers_and_dates(text: str) -> str:
     """Compress numeric expressions and dates"""
     # convert written numbers to digits

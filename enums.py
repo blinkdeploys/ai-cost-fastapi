@@ -1,5 +1,20 @@
+import re
+
+
 TOKEN_LIMIT = 5000
 
+# pre-compile the pattrerns
+_COMPILED_FILLER_PATTERNS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                             for pattern, replacement in FILLER_REPLACEMENTS.items()
+                             ]
+
+_COMPILED_REDUNDANT_PAIRS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                             for pattern, replacement in REDUNDANT_PAIRS.items()
+                             ]
+
+_COMPILED_ABBREVIATIONS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                           for pattern, replacement in ABBREVIATIONS.items()
+                           ]
 
 NUM_WORDS = {
             "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4,
@@ -16,7 +31,16 @@ MULTIPLIERS = {
                 "thousand": 1000,
                 "million": 1_000_000,
                 "billion": 1_000_000_000
+                "trillion": 1_000_000_000_000
                 }
+# Fast regex for sequences of number-words:
+WORD_NUMBER_PATTERN = re.compile(
+                                r"\b(?:(?:zero|one|two|three|four|five|six|seven|eight|nine|ten|"
+                                r"eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|"
+                                r"eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|"
+                                r"eighty|ninety|hundred|thousand|million|billion|and|&|[-])\s*)+\b",
+                                re.IGNORECASE
+                                )
 
 # stopword list similar to set used in NLTK or SpaCy
 STOPWORDS = {'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of',
