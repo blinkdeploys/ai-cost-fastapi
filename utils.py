@@ -49,7 +49,11 @@ def remove_redundant_punctuation(text: str) -> str:
 
 
 def remove_common_stopwords(text: str) -> str:
-    """Remove common English stopwords while preserving meaning"""
+    """Remove common English stopwords while preserving meaning
+    
+    Remove common English stopwords but keep the first word of each sentence.
+    Handles multiple sentences efficiently.
+    """
     result = []
     # slipt text into sentences, keeping the punctuation intact
     sentences = re.split(r'([.!?]\s*)', text)
@@ -112,20 +116,55 @@ def deduplicate_repeated_content(text: str) -> str:
 
 # Using English syntax rules to reduce prompt text further
 
+# pre-compile the pattrerns
+_COMPILED_FILLER_PATTERNS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                             for pattern, replacement in FILLER_REPLACEMENTS.items()
+                             ]
+
+_COMPILED_REDUNDANT_PAIRS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                             for pattern, replacement in REDUNDANT_PAIRS.items()
+                             ]
+
+_COMPILED_ABBREVIATIONS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                           for pattern, replacement in ABBREVIATIONS.items()
+                           ]
+
 
 def compress_filler_phrases(text: str) -> str:
     """Remove or compress common filler phrases and verbose expressions"""
-    pass
+    for pattern, replacement in _COMPILED_FILLER_PATTERNS:
+        text = pattern.sub(replacement, text)
+
+    # normalize spaces and punctuation spacing
+    text = re.sub(r'\s+', ' ', text).strip()
+    text = re.sub(r'\s+([,.!?;:])', r'\1', text)
+
+    return text
 
 
 def compress_redundant_pairs(text: str) -> str:
     """Remove redundant word pairs where both words mean the same"""
-    pass
+    for pattern, replacement in _COMPILED_REDUNDANT_PAIRS:
+        text = pattern.sub(replacement, text)
+
+    # clean up extra spaces resulting from replacements
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
 
 
 def apply_common_abbreviations(text: str) -> str:
-    """Replace common words with standard abbreviations"""
-    pass
+    """Replace common words with standard abbreviations
+
+    Replace long technical/common words with short industry-standard abbreviations.
+    Uses precompiled regex patterns for high performance.
+    """
+    for pattern, replacement in _COMPILED_ABBREVIATIONS:
+        text = pattern.sub(replacement, text)
+
+    # clean spacing
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 
 def compress_technical_terms(text: str) -> str:
@@ -146,7 +185,45 @@ def expand_to_contractions(text: str) -> str:
     pass
 
 
+# cheaper trick -  converting words to numbers
+def words_to_number(text: str):
+    """
+    Convert numbers written in English words into digits and append '(in words)'.
+    FAST implementation using token streaming.
+    """
+    # Normalize text
+    clean = text.lower()
+    clean = re.sub(r"[,/&-]", " ", clean)
+    tokens = clean.split()
 
+    total = 0
+    current = 0
+    found_words = False
+
+    for token in tokens:
+        if token in NUM_WORDS:
+            found_words = True
+            current += NUM_WORDS[token]
+        elif token in MULTIPLIERS:
+            found_words = True
+            current = max(1, current) * MULTIPLIERS[token]
+            total += current
+            current = 0
+        elif token == "and":
+            continue
+        else:
+            # not a number word
+            continue
+
+    total += current
+
+    if not found_words:
+        return text  # no conversion
+
+    return f"{total:,} (in words)"
+
+
+# TODO: to detect numbers like in words_to_number() and append approprialtey
 def compress_numbers_and_dates(text: str) -> str:
     """Compress numeric expressions and dates"""
     # convert written numbers to digits

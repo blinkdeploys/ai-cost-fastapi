@@ -1,5 +1,23 @@
 TOKEN_LIMIT = 5000
 
+
+NUM_WORDS = {
+            "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4,
+            "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
+            "ten": 10, "eleven": 11, "twelve": 12, "thirteen": 13,
+            "fourteen": 14, "fifteen": 15, "sixteen": 16, "seventeen": 17,
+            "eighteen": 18, "nineteen": 19, "twenty": 20, "thirty": 30,
+            "forty": 40, "fifty": 50, "sixty": 60, "seventy": 70,
+            "eighty": 80, "ninety": 90
+            }
+
+MULTIPLIERS = {
+                "hundred": 100,
+                "thousand": 1000,
+                "million": 1_000_000,
+                "billion": 1_000_000_000
+                }
+
 # stopword list similar to set used in NLTK or SpaCy
 STOPWORDS = {'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until', 'while', 'of',
              'at', 'by', 'for', 'with', 'about', 'against', 'between', 'into', 'through', 'during',
@@ -24,6 +42,115 @@ STOPWORDS = {'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until
              'didn', 'doesn', 'hadn', 'hasn', 'haven', 'isn', 'ma', 'mightn', 'mustn', 'needn', 'shan',
              'shouldn', 'wasn', 'weren', 'won', 'wouldn'
              }
+
+
+FILLER_REPLACEMENTS = {r'\bit is important to note that\b': '',
+                       r'\bit should be noted that\b': '',
+                       r'\bplease note that\b': '',
+                       r'\bit goes without saying\b': '',
+                       r'\bneedless to say\b': '',
+                       r'\bas you may already know\b': '',
+                       r'\bas you know\b': '',
+                       r'\bas you can see\b': '',
+                       r'\bfor what it\'s worth\b': '',
+                       r'\bin my opinion\b': '',
+                       r'\bin my personal opinion\b': '',
+                       r'\bin my honest opinion\b': '',
+                       r'\bi believe that\b': '',
+                       r'\bi think that\b': '',
+                       r'\bi feel that\b': '',
+                       r'\bi would argue that\b': '',
+                       r'\bto be honest\b': '',
+                       r'\bto tell the truth\b': '',
+                       r'\bquite frankly\b': '',
+                       r'\bfrankly\b': '',
+                       r'\bbasically\b': '',
+                       r'\bliterally\b': '',
+                       r'\bactually\b': '',
+                       r'\breally\b': '',
+                       r'\bvery\b': '',
+                       r'\bjust\b': '',
+                       r'\bsimply\b': '',
+                       r'\btruly\b': '',
+                       r'\bcertainly\b': '',
+                       r'\bdefinitely\b': '',
+                       r'\babsolutely\b': '',
+
+                       # Replace with concise alternatives
+                       r'\bin order to\b': 'to',
+                       r'\bdue to the fact that\b': 'because',
+                       r'\bfor the reason that\b': 'because',
+                       r'\bfor the purpose of\b': 'for',
+                       r'\bin light of the fact that\b': 'because',
+                       r'\bdespite the fact that\b': 'although',
+                       r'\bwith the exception of\b': 'except',
+                       r'\bat this point in time\b': 'now',
+                       r'\bat the present time\b': 'now',
+                       r'\bin the near future\b': 'soon',
+                       r'\bat the end of the day\b': 'ultimately',
+                       r'\bfor all intents and purposes\b': 'essentially',
+                       r'\bas a matter of fact\b': 'in fact',
+                       r'\bwith regard to\b': 'regarding',
+                       r'\bwith respect to\b': 'regarding',
+                       r'\bin connection with\b': 'regarding',
+                       r'\bon a daily basis\b': 'daily',
+                       r'\bon a regular basis\b': 'regularly',
+                       r'\bon an annual basis\b': 'annually',
+                       r'\bdue to the fact\b': 'because',
+                       r'\bthe vast majority of\b': 'most',
+                       r'\ba large number of\b': 'many',
+                       r'\ba small number of\b': 'few',
+                       r'\bin the event that\b': 'if',
+                       r'\bin the event of\b': 'if',
+                       r'\bfor the most part\b': 'mostly',
+                       r'\bto a certain extent\b': 'partially',
+                       r'\bto some extent\b': 'partially',
+                       r'\bit seems that\b': '',
+                       r'\bit appears that\b': '',
+                       r'\bit is possible that\b': 'maybe',
+                       r'\bit is likely that\b': 'likely',
+                       r'\bit is clear that\b': '',
+                       r'\bit is evident that\b': '',
+                       r'\bin terms of\b': '',
+                       r'\bfrom a .* perspective\b': '',
+                       }
+
+REDUNDANT_PAIRS = {
+                    r'\beach and every\b': 'each',
+                    r'\bfirst and foremost\b': 'first',
+                    r'\bfull and complete\b': 'complete',
+                    r'\bnull and void\b': 'void',
+                    r'\bcease and desist\b': 'stop',
+                    r'\bvarious and sundry\b': 'various',
+                    r'\bways and means\b': 'ways',
+                    r'\baid and abet\b': 'aid',
+                    r'\bpeace and quiet\b': 'peace',
+                    r'\bsafe and sound\b': 'safe',
+                    r'\bsick and tired\b': 'tired',
+                    r'\bhopes and dreams\b': 'hopes',
+                    r'\bterms and conditions\b': 'terms',
+                    r'\brules and regulations\b': 'rules',
+                    r'\bany and all\b': 'all',
+                    r'\bbasic and fundamental\b': 'basic',
+                    r'\btrue and accurate\b': 'accurate',
+                    r'\bfinal and complete\b': 'complete',
+                    r'\bbold and daring\b': 'bold',
+                    r'\bfree and clear\b': 'clear',
+                    r'\bfull and entire\b': 'entire',
+                    r'\bfinal and conclusive\b': 'final',
+                    r'\bpart and parcel\b': 'part',
+                    r'\bfit and proper\b': 'proper',
+                    r'\bforce and effect\b': 'effect',
+                    r'\bterms and particulars\b': 'terms',
+                    r'\bany and every\b': 'every',
+                    r'\bend result\b': 'result',
+                    r'\badvance planning\b': 'planning',
+                    r'\bpast history\b': 'history',
+                    r'\bunexpected surprise\b': 'surprise',
+                    r'\bbasic necessities\b': 'necessities',
+                    r'\bfuture plans\b': 'plans',
+                    }
+
 
 # Current LLM Pricing (November 2025) - per 1M tokens
 CURRENT_LLM_PRICING = {
