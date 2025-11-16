@@ -172,7 +172,11 @@ def compress_technical_terms(text: str) -> str:
 # and NOT for providing additional web context
 def compress_urls_and_paths(text: str) -> str:
     """Compress URLs and file paths"""
-    pass
+    # Remove http:// and https:// protocols
+    text = re.sub(r'https?://', '', text)
+    # Remove www. prefix
+    text = re.sub(r'www\.', '', text)
+    return text
 
 
 def expand_to_contractions(text: str) -> str:
