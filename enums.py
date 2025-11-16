@@ -3,19 +3,6 @@ import re
 
 TOKEN_LIMIT = 5000
 
-# pre-compile the pattrerns
-_COMPILED_FILLER_PATTERNS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
-                             for pattern, replacement in FILLER_REPLACEMENTS.items()
-                             ]
-
-_COMPILED_REDUNDANT_PAIRS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
-                             for pattern, replacement in REDUNDANT_PAIRS.items()
-                             ]
-
-_COMPILED_ABBREVIATIONS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
-                           for pattern, replacement in ABBREVIATIONS.items()
-                           ]
-
 NUM_WORDS = {
             "zero": 0, "one": 1, "two": 2, "three": 3, "four": 4,
             "five": 5, "six": 6, "seven": 7, "eight": 8, "nine": 9,
@@ -139,6 +126,34 @@ FILLER_REPLACEMENTS = {r'\bit is important to note that\b': '',
                        r'\bfrom a .* perspective\b': '',
                        }
 
+CONTRACTIONS = {
+                r'\bdo not\b': "don't",
+                r'\bdoes not\b': "doesn't",
+                r'\bdid not\b': "didn't",
+                r'\bcannot\b': "can't",
+                r'\bwill not\b': "won't",
+                r'\bwould not\b': "wouldn't",
+                r'\bshould not\b': "shouldn't",
+                r'\bcould not\b': "couldn't",
+                r'\bis not\b': "isn't",
+                r'\bare not\b': "aren't",
+                r'\bwas not\b': "wasn't",
+                r'\bwere not\b': "weren't",
+                r'\bhas not\b': "hasn't",
+                r'\bhave not\b': "haven't",
+                r'\bhad not\b': "hadn't",
+                r'\bI am\b': "I'm",
+                r'\byou are\b': "you're",
+                r'\bwe are\b': "we're",
+                r'\bthey are\b': "they're",
+                r'\bit is\b': "it's",
+                r'\bI will\b': "I'll",
+                r'\byou will\b': "you'll",
+                r'\bwe will\b': "we'll",
+                r'\bthey will\b': "they'll",
+                }
+    
+
 REDUNDANT_PAIRS = {
                     r'\beach and every\b': 'each',
                     r'\bfirst and foremost\b': 'first',
@@ -224,3 +239,18 @@ CURRENT_LLM_PRICING = {
     }
 }
 
+# pre-compile the pattrerns
+_COMPILED_FILLER_PATTERNS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                             for pattern, replacement in FILLER_REPLACEMENTS.items()
+                             ]
+
+_COMPILED_REDUNDANT_PAIRS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                             for pattern, replacement in REDUNDANT_PAIRS.items()
+                             ]
+
+_COMPILED_ABBREVIATIONS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                           for pattern, replacement in ABBREVIATIONS.items()
+                           ]
+_COMPILED_CONTRACTIONS = [(re.compile(pattern, flags=re.IGNORECASE), replacement)
+                           for pattern, replacement in CONTRACTIONS.items()
+                           ]

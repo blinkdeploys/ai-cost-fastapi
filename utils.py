@@ -3,7 +3,15 @@ import re
 import tiktoken
 from typing import Optional, Dict, List
 from models import CompressionResult, CostAnalysis, ComprehensiveReport
-from enums import TOKEN_LIMIT, CURRENT_LLM_PRICING, STOPWORDS
+from enums import (TOKEN_LIMIT,
+                    CURRENT_LLM_PRICING,
+                    STOPWORDS,
+                    _COMPILED_REDUNDANT_PAIRS,
+                    _COMPILED_ABBREVIATIONS,
+                    _COMPILED_CONTRACTIONS,
+                    NUM_WORDS, MULTIPLIERS,
+                    WORD_NUMBER_PATTERN
+                    )
 
 
 
@@ -140,7 +148,6 @@ def compress_redundant_pairs(text: str) -> str:
     return text
 
 
-
 def apply_common_abbreviations(text: str) -> str:
     """Replace common words with standard abbreviations
 
@@ -170,7 +177,12 @@ def compress_urls_and_paths(text: str) -> str:
 
 def expand_to_contractions(text: str) -> str:
     """Convert common phrases to contractions (saves tokens)"""
-    pass
+    for pattern, replacement in _COMPILED_CONTRACTIONS:
+        text = pattern.sub(replacement, text)
+
+    # clean spacing
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
 
 
 # cheaper trick -  converting words to numbers
