@@ -3,15 +3,10 @@ import re
 import tiktoken
 from typing import Optional, Dict, List
 from models import CompressionResult, CostAnalysis, ComprehensiveReport
-from enums import CURRENT_LLM_PRICING
+from enums import TOKEN_LIMIT, CURRENT_LLM_PRICING, STOPWORDS
 
 
 
-# Basic stopwords that can often be removed without losing context
-TOKEN_LIMIT = 5000
-STOPWORDS = {'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
-             'very', 'really', 'quite', 'just', 'actually', 'basically'
-             }
     
 
 
@@ -24,6 +19,11 @@ def count_tokens(text: str, model: str = "gpt-4") -> int:
     
     tokens = encoding.encode(text)
     return len(tokens)
+
+
+
+# BASIC CONPRESSION
+
 
 
 def remove_extra_whitespace(text: str) -> str:
@@ -43,6 +43,8 @@ def remove_redundant_punctuation(text: str) -> str:
     text = re.sub(r'([!?.]){2,}', r'\1', text)
     # remove spaces before punctuation
     text = re.sub(r'\s+([.,!?;:])', r'\1', text)
+    # remove extra commas in the same place
+    text = re.sub(r',{2,}', ',', text)
     return text
 
 
@@ -97,6 +99,50 @@ def deduplicate_repeated_content(text: str) -> str:
             unique_lines.append(line)
     
     return '\n'.join(unique_lines)
+
+
+
+
+
+
+# ADVANCED COMPRESSION
+
+# Using English syntax rules to reduce prompt text further
+
+
+def compress_filler_phrases(text: str) -> str:
+    """Remove or compress common filler phrases and verbose expressions"""
+    pass
+
+
+def compress_redundant_pairs(text: str) -> str:
+    """Remove redundant word pairs where both words mean the same"""
+    pass
+
+
+def apply_common_abbreviations(text: str) -> str:
+    """Replace common words with standard abbreviations"""
+    pass
+
+
+def compress_technical_terms(text: str) -> str:
+    """Replace common technical terms with abbreviations"""
+    pass
+
+
+# TODO: to include a URL shortening service
+# best for when analysing the links themseleves
+# and NOT for providing additional web context
+def compress_urls_and_paths(text: str) -> str:
+    """Compress URLs and file paths"""
+    pass
+
+
+def expand_to_contractions(text: str) -> str:
+    """Convert common phrases to contractions (saves tokens)"""
+    pass
+
+
 
 
 def compress_text(text: str):

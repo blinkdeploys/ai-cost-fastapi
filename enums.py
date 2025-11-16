@@ -1,3 +1,10 @@
+TOKEN_LIMIT = 5000
+
+# Basic stopwords that can often be removed without losing context
+STOPWORDS = {'a', 'an', 'the', 'is', 'are', 'was', 'were', 'be', 'been', 'being',
+             'very', 'really', 'quite', 'just', 'actually', 'basically'
+             }
+
 # Current LLM Pricing (November 2025) - per 1M tokens
 CURRENT_LLM_PRICING = {
     "OpenAI": {
