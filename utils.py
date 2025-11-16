@@ -10,7 +10,8 @@ from enums import (TOKEN_LIMIT,
                     _COMPILED_ABBREVIATIONS,
                     _COMPILED_CONTRACTIONS,
                     NUM_WORDS, MULTIPLIERS,
-                    WORD_NUMBER_PATTERN
+                    WORD_NUMBER_PATTERN,
+                    TECHNICAL_TERMS
                     )
 
 
@@ -162,9 +163,51 @@ def apply_common_abbreviations(text: str) -> str:
     return text
 
 
+def expand_to_contractions(text: str) -> str:
+    """Convert common phrases to contractions (saves tokens)"""
+    for pattern, replacement in _COMPILED_CONTRACTIONS:
+        text = pattern.sub(replacement, text)
+
+    # clean spacing
+    text = re.sub(r'\s+', ' ', text).strip()
+    return text
+
+
+def build_fast_replacer(mapping: dict):
+    """Fast compiled-replacement function.
+    mapping: dict { regex_pattern: replacement }
+    returns: function(text) -> replaced_text
+    """
+
+    # Sort keys by length (longest first) so multi-word matches win
+    patterns = sorted(mapping.keys(), key=len, reverse=True)
+
+    # Combine into one big union-regex:
+    # (?i) makes it case-insensitive; (?:...) is a non-capturing group
+    mega_pattern = re.compile(
+        "(?i)" + "|".join(f"(?:{p})" for p in patterns)
+    )
+
+    # Lowercase map for quick lookup of matched text
+    # (match is converted to lowercase before lookup)
+    lowered_map = {p.lower(): r for p, r in mapping.items()}
+
+    def replacer(text: str) -> str:
+        def _sub(match):
+            key = match.group(0).lower()
+            return lowered_map[key]
+        return mega_pattern.sub(_sub, text)
+
+    return replacer
+
+
 def compress_technical_terms(text: str) -> str:
     """Replace common technical terms with abbreviations"""
-    pass
+    # compile the patterns
+    technical_replacer = build_fast_replacer(TECHNICAL_TERMS)
+    # replace all occurences
+    compressed_text = technical_replacer(text)
+    return compressed_text
 
 
 # TODO: to include a URL shortening service
@@ -176,16 +219,6 @@ def compress_urls_and_paths(text: str) -> str:
     text = re.sub(r'https?://', '', text)
     # Remove www. prefix
     text = re.sub(r'www\.', '', text)
-    return text
-
-
-def expand_to_contractions(text: str) -> str:
-    """Convert common phrases to contractions (saves tokens)"""
-    for pattern, replacement in _COMPILED_CONTRACTIONS:
-        text = pattern.sub(replacement, text)
-
-    # clean spacing
-    text = re.sub(r'\s+', ' ', text).strip()
     return text
 
 
