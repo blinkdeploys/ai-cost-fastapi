@@ -1,8 +1,9 @@
+import os
+import tiktoken
+import uvicorn
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 from typing import Dict, List, Optional
-import tiktoken
-import uvicorn
 from datetime import datetime
 from models import CompressionResult, CostAnalysis, ComprehensiveReport
 from enums import CURRENT_LLM_PRICING
@@ -15,10 +16,23 @@ from utils import (count_tokens,
                    compress_text,
                    calculate_costs,
                    )
-
+from fastapi.middleware.cors import CORSMiddleware
 
 
 app = FastAPI(title="AI Cost Analysis Service", version="1.0.0")
+
+# List of allowed origins
+origins = os.environ.get("ALLOWED_ORIGINS", "").split(",")
+
+# Add CORS middleware
+app.add_middleware(CORSMiddleware,
+                   allow_origins=origins,      # exact origins allowed
+                   allow_credentials=True,
+                   allow_methods=["*"],        # allow all HTTP methods
+                   allow_headers=["*"],        # allow all headers
+                   )
+
+
 
 
 def run_cost_analysis_pipeline(text):
