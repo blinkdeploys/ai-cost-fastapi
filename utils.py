@@ -50,20 +50,23 @@ def remove_redundant_punctuation(text: str) -> str:
 
 def remove_common_stopwords(text: str) -> str:
     """Remove common English stopwords while preserving meaning"""
-    words = text.split()
-    # only remove stopwords that don't start sentences
     result = []
-    for i, word in enumerate(words):
-        # keep word if it starts a sentence or isn't a stopword
-        if i == 0 or word.lower() not in stopwords:
-            result.append(word)
-        elif word.lower() in stopwords:
-            # skip common stopwords in the middle of sentences
+    # slipt text into sentences, keeping the punctuation intact
+    sentences = re.split(r'([.!?]\s*)', text)
+
+    # loop through the sentences : smaller loop sizes
+    for i in range(0, len(sentences), 2):
+        sentence = sentences[i].split()
+        punctuation = sentences[i+1] if i+1 < len(sentences) else ''
+
+        if not sentence:
             continue
-        else:
-            result.append(word)
-    
-    return ' '.join(result)
+
+        # keep the first word, filter out stopwords for the rest
+        filtered = [sentence[0]] + [w for w in sentence[1:] if w.lower() not in STOPWORDS]
+        result.append(' '.join(filtered) + punctuation)
+
+    return ''.join(result)
 
 
 def remove_code_comments(text: str) -> str:
@@ -143,6 +146,25 @@ def expand_to_contractions(text: str) -> str:
     pass
 
 
+
+def compress_numbers_and_dates(text: str) -> str:
+    """Compress numeric expressions and dates"""
+    # convert written numbers to digits
+    number_words = {
+        r'\bone thousand\b': '1000',
+        r'\btwo thousand\b': '2000',
+        r'\bone hundred\b': '100',
+        r'\bone million\b': '1M',
+        r'\bone billion\b': '1B',
+    }
+    
+    for pattern, replacement in number_words.items():
+        text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+    
+    # Compress percentage expressions
+    text = re.sub(r'\b(\w+) percent\b', r'\1%', text)
+    
+    return text
 
 
 def compress_text(text: str):
