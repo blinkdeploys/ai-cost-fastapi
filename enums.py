@@ -17,7 +17,7 @@ MULTIPLIERS = {
                 "hundred": 100,
                 "thousand": 1000,
                 "million": 1_000_000,
-                "billion": 1_000_000_000
+                "billion": 1_000_000_000,
                 "trillion": 1_000_000_000_000
                 }
 # Fast regex for sequences of number-words:
@@ -53,6 +53,92 @@ STOPWORDS = {'a', 'an', 'the', 'and', 'but', 'if', 'or', 'because', 'as', 'until
              'didn', 'doesn', 'hadn', 'hasn', 'haven', 'isn', 'ma', 'mightn', 'mustn', 'needn', 'shan',
              'shouldn', 'wasn', 'weren', 'won', 'wouldn'
              }
+
+
+ABBREVIATIONS = {
+                # --- General Tech / Software ---
+                r'\binformation\b': 'info',
+                r'\bapplication\b': 'app',
+                r'\bapplications\b': 'apps',
+                r'\bconfiguration\b': 'config',
+                r'\bconfigurations\b': 'configs',
+                r'\bdocumentation\b': 'docs',
+                r'\bdocumentations\b': 'docs',
+                r'\bservice\b': 'svc',
+                r'\bservices\b': 'svcs',
+                r'\bparameter\b': 'param',
+                r'\bparameters\b': 'params',
+                r'\bidentifier\b': 'ID',
+                r'\bidentifiers\b': 'IDs',
+                r'\bvariable\b': 'var',
+                r'\bvariables\b': 'vars',
+                r'\bfunction\b': 'fn',
+                r'\bfunctions\b': 'fns',
+                r'\bperformance\b': 'perf',
+
+                # --- Engineering Terms ---
+                r'\bdevelopment\b': 'dev',
+                r'\bproduction\b': 'prod',
+                r'\bstaging\b': 'stage',
+                r'\benvironment\b': 'env',
+                r'\benvironments\b': 'envs',
+                r'\bintegration\b': 'int',
+                r'\bimplementation\b': 'impl',
+                r'\barchitecture\b': 'arch',
+                r'\barchitectural\b': 'arch',
+
+                # --- Infrastructure / DevOps ---
+                r'\bdatabase\b': 'DB',
+                r'\bdatabases\b': 'DBs',
+                r'\brepository\b': 'repo',
+                r'\brepositories\b': 'repos',
+                r'\binfrastructure\b': 'infra',
+                r'\bvirtual machine\b': 'VM',
+                r'\bvirtual machines\b': 'VMs',
+                r'\bcontainer\b': 'ctr',
+                r'\bcontainers\b': 'ctrs',
+                r'\bdeployment\b': 'deploy',
+                r'\bdeployments\b': 'deploys',
+
+                # --- Cloud / SaaS ---
+                r'\bplatform\b': 'plt',
+                r'\bplatforms\b': 'plts',
+                r'\baccount\b': 'acct',
+                r'\baccounts\b': 'accts',
+                r'\bsubscription\b': 'sub',
+                r'\bsubscriptions\b': 'subs',
+                r'\borganization\b': 'org',
+                r'\borganizations\b': 'orgs',
+
+                # --- People / Roles ---
+                r'\badministrator\b': 'admin',
+                r'\badministration\b': 'admin',
+                r'\bmanager\b': 'mgr',
+                r'\bmanagers\b': 'mgrs',
+                r'\bmanagement\b': 'mgmt',
+                r'\bengineer\b': 'eng',
+                r'\bengineers\b': 'engs',
+                r'\bengineering\b': 'eng',
+
+                # --- Business / Product ---
+                r'\bmaximum\b': 'max',
+                r'\bminimum\b': 'min',
+                r'\bapproximate\b': 'approx',
+                r'\bapproximately\b': 'approx',
+                r'\bspecification\b': 'spec',
+                r'\bspecifications\b': 'specs',
+                r'\brequirement\b': 'req',
+                r'\brequirements\b': 'reqs',
+                r'\bestimate\b': 'est',
+                r'\bestimates\b': 'ests',
+                r'\bestimation\b': 'est',
+
+                # --- Misc useful tech contractions ---
+                r'\bconfiguration management\b': 'config mgmt',
+                r'\bcontent management system\b': 'CMS',
+                r'\boperating system\b': 'OS',
+                r'\boperating systems\b': 'OSes',
+                }
 
 
 FILLER_REPLACEMENTS = {r'\bit is important to note that\b': '',
