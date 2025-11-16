@@ -180,8 +180,8 @@ try {
 
 **✅ Notes:**
 
-* fs.createReadStream(filePath) streams the file to the request.
-* form.getHeaders() automatically sets the correct Content-Type including the multipart boundary.
+* `fs.createReadStream(filePath)` streams the file to the request.
+* `form.getHeaders()` automatically sets the correct Content-Type including the multipart boundary.
 
 If you are using CommonJS, replace the imports with:
 ```js
